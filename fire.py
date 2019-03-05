@@ -3,7 +3,8 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-def fireDetection(space, threshold, input_file, output_file, sample_file):
+# Implements a fire detection algorithm using back projection and various optimizations explained throughout
+def fire_detection(space, threshold, input_file, output_file, sample_file):
     
     # Read in images
     source = cv2.imread(input_file)
@@ -42,46 +43,57 @@ def fireDetection(space, threshold, input_file, output_file, sample_file):
     disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10))
     cv2.filter2D(dst, -1, disc, dst)
 
-    # threshold and binary AND
+    # Mask is dilated to create a more monolithic region
+    kernel = np.ones((8, 8), np.uint8)
+    thresh = cv2.dilate(thresh, kernel, iterations=1)
+
+    # Binary threshold mask applied to original image to create a mask
     ret, thresh = cv2.threshold(dst, threshold, 255, 0)
     thresh = cv2.merge((thresh, thresh, thresh))
     res = cv2.bitwise_and(source, thresh)
 
-    kernel = np.ones((8, 8), np.uint8)
-    #erosion = cv2.erode(res, kernel, iterations = 1)
-    dilation = cv2.dilate(thresh, kernel, iterations=1)
+    # Stacks all images in one file for simple analysis of algorithm
     #res = np.vstack((source, thresh, res))
 
-    #cv2.imwrite(output_file, res)
+    # Writes the image to a file
     cv2.imwrite(output_file, thresh)
 
+# Tests the effectiveness of the 
+def image_testing(image, ground_truth):
 
-fireDetection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
-"""
-truth = cv2.imread("./fire_grdtruths/s1_flameB.tif")
-image = cv2.imread("./output/output_thresh.jpg")
+    truth = cv2.imread(ground_truth)
+    image = cv2.imread(image)
 
-if image.shape == truth.shape:
-    print("images are equal")
-    
-    truth = cv2.bitwise_not(truth) # inverts binary mask
+    if image.shape == truth.shape:
+        truth = cv2.bitwise_not(truth) # inverts binary mask
 
-    white_pixels_truth = np.sum(truth == 255)
-    black_pixels_truth = np.sum(truth == 0)
+        white_pixels_truth = np.sum(truth == 255)
+        black_pixels_truth = np.sum(truth == 0)
 
-    difference = cv2.absdiff(image, truth)
+        difference = cv2.absdiff(image, truth)
 
-    white_pixels_diff = np.sum(difference == 255)
-    black_pixels_diff = np.sum(difference == 0)
-    print("Number of white pixels truth: ", white_pixels_truth)
-    print("Number of white pixels diff: ", white_pixels_diff)
-    print("Number of black pixels truth: ", black_pixels_truth)
-    print("Number of black pixels diff: ", black_pixels_diff)
+        white_pixels_diff = np.sum(difference == 255)
+        black_pixels_image = np.sum(difference == 0)
+        print("Truth:", black_pixels_truth)
+        print("Image:", black_pixels_image)
 
-    cv2.imwrite('truth.png', truth)
-    cv2.imwrite('diff.png', difference)
-    #cv2.imshow('inverted', image)
-    #cv2.waitKey(0)
+        calc = ((black_pixels_truth - black_pixels_image) / black_pixels_truth) * 100
+        return calc
+
+        #cv2.imwrite('truth.png', truth)
+        #cv2.imwrite('diff.png', difference)
+
+
+        #cv2.imshow('inverted', image)
+        #cv2.waitKey(0)
+    else:
+        return -1
+
+
+
+#fire_detection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
+calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.tif")
+if calc == -1:
+    print('Error: Images are not the same shape and could not be compared')
 else:
-    print("images are not equal")
-"""
+    print('This image is {}% of the ground truth.'.format(round(calc, 2)))
