@@ -1,5 +1,6 @@
 import cv2
 import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from colorama import Fore, Back, Style
@@ -36,7 +37,8 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     cv2.normalize(sample_hist, sample_hist, 0, 255, cv2.NORM_MINMAX)
 
     # Blur image to produce a smoother mask
-    source_converted = cv2.blur(source_converted, (20,20))
+    #source_converted = cv2.blur(source_converted, (20,20))
+
     
     # Gets the back projection from the converted image and sample histogram
     # with preset nominal values
@@ -46,7 +48,7 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
         dst = cv2.calcBackProject([source_converted], [0, 1], sample_hist, [0, 180, 0, 256], 1)
     
     # Applies the morphing style onto the mask with specified kernel size
-    disc = cv2.getStructuringElement(cv2.MORPH_DILATE, (12, 12))
+    disc = cv2.getStructuringElement(cv2.MORPH_GRADIENT, (5, 5))
     cv2.filter2D(dst, -1, disc, dst)
 
     # Binary threshold mask applied to original image to create a mask
@@ -54,16 +56,16 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     thresh = cv2.merge((thresh, thresh, thresh))
     
     # Mask is dilated to create a more monolithic region
-    #kernel = np.ones((8, 8), np.uint8)
-    #thresh = cv2.dilate(thresh, kernel, iterations=1)
+    kernel = np.ones((8, 8), np.uint8)
+    thresh = cv2.dilate(thresh, kernel, iterations=1)
 
     res = cv2.bitwise_and(source, thresh)
 
     # Stacks all images in one file for simple analysis of algorithm
     #res = np.vstack((source, thresh, res))
-
+    res = np.concatenate((source, thresh, res), axis=1)
     # Writes the image to a file
-    cv2.imwrite(output_file, thresh)
+    cv2.imwrite(output_file, res)
 
 # Tests the effectiveness of the image against a ground truth image by
 # calculating the difference of the images
@@ -88,8 +90,9 @@ def image_testing(image, ground_truth):
         calc = ((black_pixels_truth - black_pixels_image) / black_pixels_truth) * 100
        
 
-        cv2.imwrite('ground_truth.png', truth)
-        cv2.imwrite('overlayed.png', difference)
+        #cv2.imwrite('ground_truth.png', truth)
+        #cv2.imwrite('overlayed.png', difference)
+
         return calc
         #cv2.imshow('inverted', image)
         #cv2.waitKey(0)
@@ -115,6 +118,7 @@ def test_results(result):
     print(Style.RESET_ALL, end='')
     print(' of the ground truth.')
 
+
 """
 for arg in range(len(sys.argv)):
     print('Arg:', '{}'.format(str(sys.argv[arg])))
@@ -128,12 +132,14 @@ ground_truth = sys.argv[6]
 """
 fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5])
 """
-res = image_testing(sys.argv[4], sys.argv[6])
-if res < 0:
-    print(Fore.RED, 'Error:',Style.RESET_ALL, 'Images are not the same shape and could not be compared')
-else:
-    test_results(res)
-    """
+if len(sys.argv) > 5:
+    res = image_testing(sys.argv[4], sys.argv[6])
+    
+    if res < 0:
+        print(Fore.RED, 'Error:',Style.RESET_ALL, 'Images are not the same shape and could not be compared')
+    else:
+        test_results(res)
+"""
 #fire_detection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
 """
 calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.tif")

@@ -7,6 +7,7 @@ THRESH=50
 
 # GROUND TRUTH TESTING
 tests: c1 c2 c3 c4 s1 s2 s3 s4
+
 c1:
 	python3 fire.py YCC $(THRESH) ./fire_grdtruths/c1_large.jpg ./output/output_c1.jpg $(SAMPLE) ./fire_grdtruths/c1_flameB.tif
 c2:
@@ -27,3 +28,33 @@ s4:
 
 nofire:
 	python3 fire.py YCC $(THRESH) ./fireImages1/trump.jpg ./output/output_s4.jpg $(SAMPLE) ./fire_grdtruths/s4_flameB.tif
+
+fptests: fp1 fp2 fp3 fp4 fp5 fp6
+
+fp1:
+	python3 fire.py YCC $(THRESH) ./falsePositives/fp-1.jpg ./output/fp_output/output_fp-1.jpg $(SAMPLE)
+fp2:
+	python3 fire.py YCC $(THRESH) ./falsePositives/fp-2.jpg ./output/fp_output/output_fp-2.jpg $(SAMPLE)
+fp3:
+	python3 fire.py YCC $(THRESH) ./falsePositives/fp-3.jpg ./output/fp_output/output_fp-3.jpg $(SAMPLE)
+fp4:
+	python3 fire.py YCC $(THRESH) ./falsePositives/fp-4.jpg ./output/fp_output/output_fp-4.jpg $(SAMPLE)
+fp5:
+	python3 fire.py YCC $(THRESH) ./falsePositives/fp-5.jpg ./output/fp_output/output_fp-5.jpg $(SAMPLE)
+fp6:
+	python3 fire.py YCC $(THRESH) ./falsePositives/fp-6.jpg ./output/fp_output/output_fp-6.jpg $(SAMPLE)
+
+concat:
+# IMAGE 	GROUND_TRUTH 	OUTPUT_FILE
+cat_fp1:
+	python3 concat.py ./falsePositives/fp-1.jpg ./output/fp_output/output_fp-1.jpg ./output/stack/cat_fp-3.jpg
+cat_fp2:
+	python3 concat.py ./falsePositives/fp-2.jpg ./output/fp_output/output_fp-2.jpg ./output/stack/cat_fp-2.jpg
+cat_fp3:
+	python3 concat.py ./falsePositives/fp-3.jpg ./output/fp_output/output_fp-3.jpg ./output/stack/cat_fp-3.jpg
+cat_fp4:
+	python3 concat.py ./falsePositives/fp-4.jpg ./output/fp_output/output_fp-4.jpg ./output/stack/cat_fp-4.jpg
+cat_fp5:
+	python3 concat.py ./falsePositives/fp-5.jpg ./output/fp_output/output_fp-5.jpg ./output/stack/cat_fp-5.jpg
+cat_fp6:
+	python3 concat.py ./falsePositives/fp-6.jpg ./output/fp_output/output_fp-6.jpg ./output/stack/cat_fp-6.jpg
