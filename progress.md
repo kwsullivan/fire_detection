@@ -2,15 +2,15 @@
 
 1. HSV Colour Space with back projection with low threshold - resulted in an image with too much grass being masked
 
-![alt_text](./expmtOutput/HSV_with_grass.jpg)
+![alt_text](./images_for_report/HSV_with_grass.jpg)
 
 2. Increased threshold to try and fine tune the mask - resulted in less fire and grass detected but still picking up a lot of grass
 
-![alt_text](./expmtOutput/HSV_with_higherThresh.jpg)
+![alt_text](./images_for_report/HSV_with_higherThresh.jpg)
 
 3. Converted colour space to YCC - resulted in less fire being masked but also no grass being masked.
 
-![alt_text](./expmtOutput/YCC_with_lowThresh.jpg)
+![alt_text](./images_for_report/YCC_with_lowThresh.jpg)
 
 4. Created a custom sample of fire images to be used for back projection - resulted in an increase in fire detection but still a fairly noisy mask
 

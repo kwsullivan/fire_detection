@@ -48,7 +48,7 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
         dst = cv2.calcBackProject([source_converted], [0, 1], sample_hist, [0, 180, 0, 256], 1)
     
     # Applies the morphing style onto the mask with specified kernel size
-    disc = cv2.getStructuringElement(cv2.MORPH_GRADIENT, (5, 5))
+    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     cv2.filter2D(dst, -1, disc, dst)
 
     # Binary threshold mask applied to original image to create a mask
@@ -56,8 +56,8 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     thresh = cv2.merge((thresh, thresh, thresh))
     
     # Mask is dilated to create a more monolithic region
-    kernel = np.ones((8, 8), np.uint8)
-    thresh = cv2.dilate(thresh, kernel, iterations=1)
+    #kernel = np.ones((8, 8), np.uint8)
+    #thresh = cv2.dilate(thresh, kernel, iterations=1)
 
     res = cv2.bitwise_and(source, thresh)
 
