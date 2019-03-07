@@ -2,17 +2,18 @@ import cv2
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+from colorama import Fore, Back, Style
 
-def read_values(command_line):
-    
-
-# Implements a fire detection algorithm using back projection and 
+# Implements a fire detection algorithm using back projection and
 # various optimizations explained throughout
 def fire_detection(space, threshold, input_file, output_file, sample_file):
-    
     # Read in images
     source = cv2.imread(input_file)
     sample = cv2.imread(sample_file)
+    if source is None:
+        print("Image is none.")
+    if sample is None:
+        print("Sample is none.")
 
     # Convert to appropriate colour space (defaults to YCC if unspecified)
     if (space == "HSV"):
@@ -35,9 +36,9 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     cv2.normalize(sample_hist, sample_hist, 0, 255, cv2.NORM_MINMAX)
 
     # Blur image to produce a smoother mask
-    source_converted = cv2.blur(source_converted, (15,15))
+    source_converted = cv2.blur(source_converted, (20,20))
     
-    # Gets the back projection from the converted image and sample histogram 
+    # Gets the back projection from the converted image and sample histogram
     # with preset nominal values
     if(space == "YCC"):
         dst = cv2.calcBackProject([source_converted], [0, 1], sample_hist, [16, 235, 16, 235], 1)
@@ -45,7 +46,7 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
         dst = cv2.calcBackProject([source_converted], [0, 1], sample_hist, [0, 180, 0, 256], 1)
     
     # Applies the morphing style onto the mask with specified kernel size
-    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10))
+    disc = cv2.getStructuringElement(cv2.MORPH_DILATE, (12, 12))
     cv2.filter2D(dst, -1, disc, dst)
 
     # Binary threshold mask applied to original image to create a mask
@@ -53,8 +54,8 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     thresh = cv2.merge((thresh, thresh, thresh))
     
     # Mask is dilated to create a more monolithic region
-    kernel = np.ones((8, 8), np.uint8)
-    thresh = cv2.dilate(thresh, kernel, iterations=1)
+    #kernel = np.ones((8, 8), np.uint8)
+    #thresh = cv2.dilate(thresh, kernel, iterations=1)
 
     res = cv2.bitwise_and(source, thresh)
 
@@ -82,37 +83,57 @@ def image_testing(image, ground_truth):
 
         white_pixels_diff = np.sum(difference == 255)
         black_pixels_image = np.sum(difference == 0)
-        print("Truth:", black_pixels_truth)
-        print("Image:", black_pixels_image)
-
+        #print("Truth:", black_pixels_truth)
+        #print("Image:", black_pixels_image)
         calc = ((black_pixels_truth - black_pixels_image) / black_pixels_truth) * 100
-        return calc
+       
 
-        #cv2.imwrite('truth.png', truth)
-        #cv2.imwrite('diff.png', difference)
+        cv2.imwrite('ground_truth.png', truth)
+        cv2.imwrite('overlayed.png', difference)
+        return calc
         #cv2.imshow('inverted', image)
         #cv2.waitKey(0)
+    return -1
+
+# Prints out the results in colour coding formatted to correlate with its strength
+def test_results(result):
+
+    print('This image is', end='')
+
+    if(result >= 90):
+        print(Fore.GREEN, Style.BRIGHT, end='')
+    elif(70 <= result < 80):
+        print(Fore.GREEN, Style.NORMAL, end='')
+    elif(60 <= result < 70):
+        print(Fore.YELLOW, Style.BRIGHT, end='')
+    elif(50 <= result < 60):
+        print(Fore.YELLOW, Style.NORMAL, end='')
     else:
-        return -1
+        print(Fore.RED, Style.NORMAL, end='')
+    
+    print('{}%'.format(round(result, 2)), end='')
+    print(Style.RESET_ALL, end='')
+    print(' of the ground truth.')
 
-
-
-#for i in str(sys.argv):
-print('{}'.format(str(sys.argv)))
-#for i in str(sys.argv):
-print('{}'.format(str(sys.argv[0])))
-print('{}'.format(len(sys.argv)))
-lenght = len(sys.argv)
+"""
 for arg in range(len(sys.argv)):
-    print('here')
+    print('Arg:', '{}'.format(str(sys.argv[arg])))
 
-space       = sys.argv[1]
-threshold   = sys.argv[2]
-input_file  = sys.argv[3]
+space = sys.argv[1]
+threshold = int(sys.argv[2])
+input_file = sys.argv[3]
 output_file = sys.argv[4]
 sample_file = sys.argv[5]
-
-fire_detection(space, threshold, input_file, output_file, sample_file)
+ground_truth = sys.argv[6]
+"""
+fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5])
+"""
+res = image_testing(sys.argv[4], sys.argv[6])
+if res < 0:
+    print(Fore.RED, 'Error:',Style.RESET_ALL, 'Images are not the same shape and could not be compared')
+else:
+    test_results(res)
+    """
 #fire_detection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
 """
 calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.tif")
