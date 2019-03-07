@@ -142,7 +142,7 @@ if len(sys.argv) > 5:
 """
 #fire_detection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
 """
-calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.tif")
+calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.jpg")
 if calc == -1:
     print('Error: Images are not the same shape and could not be compared')
 else:

@@ -21,22 +21,22 @@ endif
 tests: c1 c2 c3 c4 s1 s2 s3 s4
 
 c1:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c1_large.jpg ./output/output_c1.jpg $(SAMPLE) ./fire_grdtruths/c1_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c1_large.jpg ./output/output_c1.jpg $(SAMPLE) ./fire_grdtruths/c1_flameB.jpg
 c2:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c2.jpg ./output/output_c2.jpg $(SAMPLE) ./fire_grdtruths/c2_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c2.jpg ./output/output_c2.jpg $(SAMPLE) ./fire_grdtruths/c2_flameB.jpg
 c3:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c3.png ./output/output_c3.jpg $(SAMPLE) ./fire_grdtruths/c3_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c3.png ./output/output_c3.jpg $(SAMPLE) ./fire_grdtruths/c3_flameB.jpg
 c4:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c4.jpg ./output/output_c4.jpg $(SAMPLE) ./fire_grdtruths/c4_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c4.jpg ./output/output_c4.jpg $(SAMPLE) ./fire_grdtruths/c4_flameB.jpg
 
 s1:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s1.jpg ./output/output_s1.jpg $(SAMPLE) ./fire_grdtruths/s1_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s1.jpg ./output/output_s1.jpg $(SAMPLE) ./fire_grdtruths/s1_flameB.jpg
 s2:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s2.tif ./output/output_s2.jpg $(SAMPLE) ./fire_grdtruths/s2_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s2.jpg ./output/output_s2.jpg $(SAMPLE) ./fire_grdtruths/s2_flameB.jpg
 s3:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s3.jpg ./output/output_s3.jpg $(SAMPLE) ./fire_grdtruths/s3_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s3.jpg ./output/output_s3.jpg $(SAMPLE) ./fire_grdtruths/s3_flameB.jpg
 s4:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s4.jpg ./output/output_s4.jpg $(SAMPLE) ./fire_grdtruths/s4_flameB.tif
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s4.jpg ./output/output_s4.jpg $(SAMPLE) ./fire_grdtruths/s4_flameB.jpg
 
 # OPENS GROUND TRUTH TESTING FILES FOR ANALYSIS
 stopen: open1 open2 open3 open4 open5 open6 open7 open8
