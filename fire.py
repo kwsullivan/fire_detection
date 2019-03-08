@@ -7,7 +7,7 @@ from colorama import Fore, Back, Style
 
 # Implements a fire detection algorithm using back projection and
 # various optimizations explained throughout
-def fire_detection(space, threshold, input_file, output_file, sample_file):
+def fire_detection(space, threshold, input_file, output_file, sample_file, testing_truth):
     # Read in images
     source = cv2.imread(input_file)
     sample = cv2.imread(sample_file)
@@ -31,14 +31,15 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     if(space == "YCC"):
         sample_hist = cv2.calcHist([sample_converted], [0, 1], None, [16, 235], [16, 240, 16, 240])
     elif(space == "HSV"):
-        sample_hist = cv2.calcHist([sample_converted], [0, 1], None, [180, 256], [0, 180, 0, 256])
+        sample_hist = cv2.calcHist([sample_converted], [0, 1], None, [16, 235], [16, 240, 16, 240])
 
     # Normalize the histogram from 0-255 range
     cv2.normalize(sample_hist, sample_hist, 0, 255, cv2.NORM_MINMAX)
 
     # Blur image to produce a smoother mask
     #source_converted = cv2.blur(source_converted, (20,20))
-
+    #source_converted = cv2.cvtColor(source, cv2.COLOR_YCR_CB2RGB)
+    #cv2.imwrite('blurred.jpg', source_converted)
     
     # Gets the back projection from the converted image and sample histogram
     # with preset nominal values
@@ -56,16 +57,20 @@ def fire_detection(space, threshold, input_file, output_file, sample_file):
     thresh = cv2.merge((thresh, thresh, thresh))
     
     # Mask is dilated to create a more monolithic region
-    #kernel = np.ones((8, 8), np.uint8)
+    kernel = np.ones((15, 15), np.uint8)
     #thresh = cv2.dilate(thresh, kernel, iterations=1)
+    #thresh = cv2.erode(thresh, kernel, iterations=1)
 
     res = cv2.bitwise_and(source, thresh)
 
     # Stacks all images in one file for simple analysis of algorithm
-    #res = np.vstack((source, thresh, res))
-    res = np.concatenate((source, thresh, res), axis=1)
-    # Writes the image to a file
-    cv2.imwrite(output_file, res)
+
+    if(testing_truth):
+        cv2.imwrite(output_file, thresh)
+    else:
+        res = np.concatenate((source, thresh, res), axis=1)
+        cv2.imwrite(output_file, res)
+    
 
 # Tests the effectiveness of the image against a ground truth image by
 # calculating the difference of the images
@@ -130,16 +135,18 @@ output_file = sys.argv[4]
 sample_file = sys.argv[5]
 ground_truth = sys.argv[6]
 """
-fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5])
-"""
-if len(sys.argv) > 5:
+
+
+if len(sys.argv) == 7:
+    fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5], 1)
     res = image_testing(sys.argv[4], sys.argv[6])
     
     if res < 0:
         print(Fore.RED, 'Error:',Style.RESET_ALL, 'Images are not the same shape and could not be compared')
     else:
         test_results(res)
-"""
+else:
+    fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5], 0)
 #fire_detection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
 """
 calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.jpg")
