@@ -13,21 +13,11 @@ else
 	OSFLAG += OSX
 endif
 
-# python3 fire.py YCC 50 ./fire_grdtruths/s1.jpg ./output/output_new2.jpg sample_fire_images.png ./fire_grdtruths/
-# SPACE THRESHOLD INPUT_FILE OUTPUT_FILE SAMPLE_FILE GROUND_TRUTH
+all: tests fptests chtests
 
-# GROUND TRUTH TESTING
+open: stopen fpopen chopen
 
-tests: c1 c2 c3 c4 s1 s2 s3 s4
-
-c1:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c1_large.jpg ./output/output_c1.jpg $(SAMPLE) ./fire_grdtruths/c1_flameB.jpg
-c2:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c2.jpg ./output/output_c2.jpg $(SAMPLE) ./fire_grdtruths/c2_flameB.jpg
-c3:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c3.png ./output/output_c3.jpg $(SAMPLE) ./fire_grdtruths/c3_flameB.jpg
-c4:
-	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c4.jpg ./output/output_c4.jpg $(SAMPLE) ./fire_grdtruths/c4_flameB.jpg
+tests: s1 s2 s3 s4 c1 c2 c3 c4
 
 s1:
 	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s1.jpg ./output/output_s1.jpg $(SAMPLE) ./fire_grdtruths/s1_flameB.jpg
@@ -38,7 +28,15 @@ s3:
 s4:
 	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/s4.jpg ./output/output_s4.jpg $(SAMPLE) ./fire_grdtruths/s4_flameB.jpg
 
-# OPENS GROUND TRUTH TESTING FILES FOR ANALYSIS
+c1:
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c1_large.jpg ./output/output_c1.jpg $(SAMPLE) ./fire_grdtruths/c1_flameB.jpg
+c2:
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c2.jpg ./output/output_c2.jpg $(SAMPLE) ./fire_grdtruths/c2_flameB.jpg
+c3:
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c3.png ./output/output_c3.jpg $(SAMPLE) ./fire_grdtruths/c3_flameB.jpg
+c4:
+	$(COMPILER) fire.py YCC $(THRESH) ./fire_grdtruths/c4.jpg ./output/output_c4.jpg $(SAMPLE) ./fire_grdtruths/c4_flameB.jpg
+
 stopen: open1 open2 open3 open4 open5 open6 open7 open8
 
 open1:
@@ -58,7 +56,6 @@ open7:
 open8:
 	$(OPEN) ./output/output_s4.jpg
 
-# FALSE POSITIVE TESTING
 fptests: fp1 fp2 fp3 fp4 fp5 fp6
 
 fp1:
@@ -74,7 +71,6 @@ fp5:
 fp6:
 	$(COMPILER) fire.py YCC $(THRESH) ./falsePositives/fp-6.jpg ./output/fp_output/output_fp-6.jpg $(SAMPLE)
 
-# OPENS 
 fpopen: fpopen1 fpopen2 fpopen3 fpopen4 fpopen5 fpopen6
 
 fpopen1:
@@ -91,7 +87,6 @@ fpopen6:
 	$(OPEN) ./output/fp_output/output_fp-6.jpg
 
 chtests: ch1 ch2 ch3 ch4
-
 
 ch1:
 	$(COMPILER) fire.py YCC $(THRESH) ./challenging/ch-fire-1.jpg ./output/ch_output/output_ch-1.jpg $(SAMPLE)

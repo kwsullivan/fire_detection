@@ -37,9 +37,7 @@ def fire_detection(space, threshold, input_file, output_file, sample_file, testi
     cv2.normalize(sample_hist, sample_hist, 0, 255, cv2.NORM_MINMAX)
 
     # Blur image to produce a smoother mask
-    #source_converted = cv2.blur(source_converted, (20,20))
-    #source_converted = cv2.cvtColor(source, cv2.COLOR_YCR_CB2RGB)
-    #cv2.imwrite('blurred.jpg', source_converted)
+    # source_converted = cv2.blur(source_converted, (20,20))
     
     # Gets the back projection from the converted image and sample histogram
     # with preset nominal values
@@ -49,15 +47,15 @@ def fire_detection(space, threshold, input_file, output_file, sample_file, testi
         dst = cv2.calcBackProject([source_converted], [0, 1], sample_hist, [0, 180, 0, 256], 1)
     
     # Applies the morphing style onto the mask with specified kernel size
-    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    disc = cv2.getStructuringElement(cv2.MORPH_DILATE, (5, 5))
     cv2.filter2D(dst, -1, disc, dst)
 
     # Binary threshold mask applied to original image to create a mask
     ret, thresh = cv2.threshold(dst, threshold, 255, 0)
     thresh = cv2.merge((thresh, thresh, thresh))
     
-    # Mask is dilated to create a more monolithic region
-    kernel = np.ones((15, 15), np.uint8)
+    # Creates a closure property on the image
+    #kernel = np.ones((15, 15), np.uint8)
     #thresh = cv2.dilate(thresh, kernel, iterations=1)
     #thresh = cv2.erode(thresh, kernel, iterations=1)
 
@@ -90,17 +88,9 @@ def image_testing(image, ground_truth):
 
         white_pixels_diff = np.sum(difference == 255)
         black_pixels_image = np.sum(difference == 0)
-        #print("Truth:", black_pixels_truth)
-        #print("Image:", black_pixels_image)
+    
         calc = ((black_pixels_truth - black_pixels_image) / black_pixels_truth) * 100
-       
-
-        #cv2.imwrite('ground_truth.png', truth)
-        #cv2.imwrite('overlayed.png', difference)
-
         return calc
-        #cv2.imshow('inverted', image)
-        #cv2.waitKey(0)
     return -1
 
 # Prints out the results in colour coding formatted to correlate with its strength
@@ -123,20 +113,6 @@ def test_results(result):
     print(Style.RESET_ALL, end='')
     print(' of the ground truth.')
 
-
-"""
-for arg in range(len(sys.argv)):
-    print('Arg:', '{}'.format(str(sys.argv[arg])))
-
-space = sys.argv[1]
-threshold = int(sys.argv[2])
-input_file = sys.argv[3]
-output_file = sys.argv[4]
-sample_file = sys.argv[5]
-ground_truth = sys.argv[6]
-"""
-
-
 if len(sys.argv) == 7:
     fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5], 1)
     res = image_testing(sys.argv[4], sys.argv[6])
@@ -147,11 +123,3 @@ if len(sys.argv) == 7:
         test_results(res)
 else:
     fire_detection(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5], 0)
-#fire_detection("YCC", 50, "./fire_grdtruths/s1.jpg", "./output/output_thresh1.jpg", "sample_fire_images.png")
-"""
-calc = image_testing("./output/output_thresh1.jpg","./fire_grdtruths/s1_flameB.jpg")
-if calc == -1:
-    print('Error: Images are not the same shape and could not be compared')
-else:
-    print('This image is {}% of the ground truth.'.format(round(calc, 2)))
-"""
