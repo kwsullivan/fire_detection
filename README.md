@@ -1,4 +1,5 @@
 # Fire Detection Implementation and Testing
+
 fire.py is an implementation of the histogram backprojection method for fire detection proposed by Wirth and Zaremba in their 2010 paper "Flame region detection based on histogram backprojection". The implementation uses both images used in the aformentioned paper and images selected to test this particular implementation and its drawbacks.
 The following describes how to run the algorithm through tests discussed in the included paper. Please refer to the attached paper for a full dissection of testing and results.<br>Note that Make is required to execute these commands, otherwise execute them manually based on the makefile.
 <br><br>**Images must be opened manually in Windows OS, they will be opened automatically in OSX.**
